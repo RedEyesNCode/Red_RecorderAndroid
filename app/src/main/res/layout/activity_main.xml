@@ -26,7 +26,6 @@
         android:background="@color/red"
         android:layout_margin="@dimen/_25sdp"
         android:textSize="@dimen/_16sdp"
-        android:visibility="invisible"
         android:textColor="@color/white"
         android:layout_below="@id/btnStartCalllRecorder"
         android:fontFamily="@font/sn_bold"

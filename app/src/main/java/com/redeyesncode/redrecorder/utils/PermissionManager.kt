@@ -23,6 +23,7 @@ object PermissionManager {
     const val MANAGE_STORAGE_REQUEST_CODE = 12
     const val READ_STORAGE_REQUEST_CODE = 13
     const val CAPTURE_AUDIO_REQUEST_CODE = 14
+    const val FOREGROUND_SERVICE_REQUEST_CODE = 15
 
     fun requestCallPhonePermission(activity: Activity) {
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -98,5 +99,9 @@ object PermissionManager {
         }
     }
 
-
+    fun requestForegroundService(activity: Activity) {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.FOREGROUND_SERVICE), FOREGROUND_SERVICE_REQUEST_CODE)
+        }
+    }
 }

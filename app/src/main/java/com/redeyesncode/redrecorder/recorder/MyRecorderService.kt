@@ -68,66 +68,64 @@ class MyRecorderService : Service() {
 
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == ACTION_IN) {
-                bundle = intent.extras
-                if (bundle != null) {
-                    state = bundle?.getString(TelephonyManager.EXTRA_STATE)
-                    if (state == TelephonyManager.EXTRA_STATE_RINGING) {
-                        inCall = bundle?.getString(TelephonyManager.EXTRA_INCOMING_NUMBER)
-                        wasRinging = true
-                        Toast.makeText(context, "IN : $inCall", Toast.LENGTH_LONG).show()
-                    } else if (state == TelephonyManager.EXTRA_STATE_OFFHOOK) {
-                        if (wasRinging) {
-                            Toast.makeText(context, "ANSWERED", Toast.LENGTH_LONG).show()
-                            val out = SimpleDateFormat("dd-MM-yyyy hh-mm-ss").format(Date())
-                            val sampleDir = File(Environment.getExternalStorageDirectory(), "/TestRecordingDasa1")
-                            if (!sampleDir.exists()) {
-                                sampleDir.mkdirs()
-                            }
-                            val file_name = "Record"
-                            try {
-                                audiofile = File.createTempFile(file_name, ".amr", sampleDir)
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                                Log.i("SERVICE_RECORDING","IOException")
-                            }
-                            val path = Environment.getExternalStorageDirectory().absolutePath
-                            recorder = MediaRecorder()
-                            recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
-                            recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
-                            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
-                            recorder.setOutputFile(audiofile.absolutePath)
-                            try {
-                                recorder.prepare()
-                                Log.i("SERVICE_RECORDING","PREPARE")
+                Toast.makeText(context, "INCOMING CALL : $inCall", Toast.LENGTH_LONG).show()
 
-                            } catch (e: IllegalStateException) {
-                                Log.i("SERVICE_RECORDING","IllegalStateException")
-
-                                e.printStackTrace()
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                                Log.i("SERVICE_RECORDING","IOException")
-
-                            }
-                            recorder.start()
-                            recordstarted = true
-                        }
-                    } else if (state == TelephonyManager.EXTRA_STATE_IDLE) {
-                        wasRinging = false
-                        Toast.makeText(context, "REJECT || DISCO", Toast.LENGTH_LONG).show()
-                        if (recordstarted) {
-                            recorder.stop()
-                            recordstarted = false
-                        }
-                    }
-                }
             } else if (intent.action == ACTION_OUT) {
                 outCall = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER)
-                Toast.makeText(context, "OUT : $outCall", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "OUTGOING CALL : $outCall", Toast.LENGTH_LONG).show()
+            }
+            bundle = intent.extras
+            if (bundle != null) {
+                state = bundle?.getString(TelephonyManager.EXTRA_STATE)
+                if (state == TelephonyManager.EXTRA_STATE_RINGING) {
+                    inCall = bundle?.getString(TelephonyManager.EXTRA_INCOMING_NUMBER)
+                    wasRinging = true
+                    Toast.makeText(context, "IN : $inCall", Toast.LENGTH_LONG).show()
+                } else if (state == TelephonyManager.EXTRA_STATE_OFFHOOK) {
+                    if (wasRinging) {
+                        Toast.makeText(context, "ANSWERED", Toast.LENGTH_LONG).show()
+                        val out = SimpleDateFormat("dd-MM-yyyy hh-mm-ss").format(Date())
+                        val sampleDir = File(Environment.getExternalStorageDirectory(), "/RED_RECORDER")
+                        if (!sampleDir.exists()) {
+                            sampleDir.mkdirs()
+                        }
+                        val file_name = "Record"
+                        try {
+                            audiofile = File.createTempFile(file_name, ".amr", sampleDir)
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            Log.i("SERVICE_RECORDING","IOException")
+                        }
+                        val path = Environment.getExternalStorageDirectory().absolutePath
+                        recorder = MediaRecorder()
+                        recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
+                        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
+                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                        recorder.setOutputFile(audiofile.absolutePath)
+                        try {
+                            recorder.prepare()
+                            Log.i("SERVICE_RECORDING","PREPARE")
 
+                        } catch (e: IllegalStateException) {
+                            Log.i("SERVICE_RECORDING","IllegalStateException")
 
+                            e.printStackTrace()
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            Log.i("SERVICE_RECORDING","IOException")
 
-
+                        }
+                        recorder.start()
+                        recordstarted = true
+                    }
+                } else if (state == TelephonyManager.EXTRA_STATE_IDLE) {
+                    wasRinging = false
+                    Toast.makeText(context, "REJECT || DISCO", Toast.LENGTH_LONG).show()
+                    if (recordstarted) {
+                        recorder.stop()
+                        recordstarted = false
+                    }
+                }
             }
         }
     }
