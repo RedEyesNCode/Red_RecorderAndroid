@@ -88,6 +88,7 @@ object PermissionManager {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAPTURE_AUDIO_OUTPUT), CAPTURE_AUDIO_REQUEST_CODE)
         }
     }
+
     fun requestManageStoragePermission(activity: Activity) {
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.MANAGE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.MANAGE_EXTERNAL_STORAGE), MANAGE_STORAGE_REQUEST_CODE)

@@ -7,6 +7,8 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SHORT_SERVICE
+import android.os.Build
 import android.os.IBinder
 import android.telephony.TelephonyManager
 import android.util.Log
@@ -29,7 +31,7 @@ class CallNotificationService : Service() {
                 val callState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
                 if (callState == TelephonyManager.EXTRA_STATE_OFFHOOK) {
                     // The call has started; show the notification.
-                    showNotification()
+                        showNotification()
                 }else{
                     Log.i("RED_RECORDER","service-call-state-${callState}")
                 }
@@ -54,13 +56,13 @@ class CallNotificationService : Service() {
 
         // Create a notification channel (required for Android 8.0+)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Call Notification", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(channelId, "RED_RECORDER", NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
 
         // Create a pending intent for when the notification is clicked
         val notificationIntent = Intent(this, SplashActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
 
         // Build the notification
         val notification = NotificationCompat.Builder(this, channelId)
@@ -71,6 +73,10 @@ class CallNotificationService : Service() {
             .build()
 
         // Start the service in the foreground, so the notification remains visible
-        startForeground(notificationId, notification)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(notificationId, notification,FOREGROUND_SERVICE_TYPE_SHORT_SERVICE)
+        }else{
+            startForeground(notificationId, notification)
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.Intent
 import android.media.MediaRecorder
 import android.os.Environment
+import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -50,6 +51,10 @@ class CallRecordingService : Service() {
                     mediaRecorder?.setOutputFile(outputFilePath)
                     mediaRecorder?.prepare()
                     mediaRecorder?.start()
+                    Handler().postDelayed(Runnable {
+
+                                                   stopRecording()
+                    },5000)
 
                     isRecording = true
                     showRecordingNotification()

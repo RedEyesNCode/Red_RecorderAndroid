@@ -16,38 +16,31 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 class AudioRecordService : Service() {
-    private var mediaRecorder: MediaRecorder? = null
     private val handler = Handler()
     private val recordingDuration = 6000 // 15 seconds in milliseconds
     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val filePath = downloadsDir.absolutePath + "/recording${getCurrentTime()}red.3gp"
+    val filePath = downloadsDir.absolutePath + "/recording${getCurrentTime()}red.amr"
+
+
+    private var mediaRecorder: MediaRecorder? = null
+        get() {
+            if (field == null) {
+                field = createMediaRecorder()
+            }
+            return field
+        }
+
     @SuppressLint("NewApi")
     override fun onCreate() {
         super.onCreate()
         Log.i("RED_RECORDER","service-record-oncreate")
-        try {
-            mediaRecorder = MediaRecorder()
-            mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL)
-            mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-            mediaRecorder?.setOutputFile(filePath)
-        }catch (e:Exception){
-            Log.i("RED_RECORDER","service-record-exception-oncreate ${e.message.toString()}")
-
-        }
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == "START_RECORDING") {
             // Start recording
             try {
-                mediaRecorder?.prepare()
-                mediaRecorder?.start()
-                handler.postDelayed({
-                    // Stop recording after 15 seconds
-                    stopRecording()
-                }, recordingDuration.toLong())
+
                 Log.i("RED_RECORDER","service-record-prepare()")
 
             } catch (e: Exception) {
@@ -64,13 +57,30 @@ class AudioRecordService : Service() {
 
         return START_NOT_STICKY
     }
-
+    private fun createMediaRecorder(): MediaRecorder {
+        val recorder = MediaRecorder()
+        recorder.setAudioSource(MediaRecorder.AudioSource.UNPROCESSED)
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        recorder.setOutputFile(filePath)
+        return recorder
+    }
     private fun stopRecording() {
         mediaRecorder?.stop()
         mediaRecorder?.reset()
         mediaRecorder?.release()
         mediaRecorder = null
         stopSelf()
+    }
+    private suspend fun startRecording() {
+        try {
+            mediaRecorder?.prepare()
+            mediaRecorder?.start()
+            Log.i("RED_RECORDER", "service-record-prepare()")
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.i("RED_RECORDER", "service-record-exception-recorder ${e.message.toString()}")
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -80,7 +90,7 @@ class AudioRecordService : Service() {
     @SuppressLint("NewApi")
     fun getCurrentTime(): String {
         val currentTime = LocalTime.now()
-        val formatter = DateTimeFormatter.ofPattern("mm_s") // Format as "HH:mm:ss" for 24-hour time
+        val formatter = DateTimeFormatter.ofPattern("HH_mm_s") // Format as "HH:mm:ss" for 24-hour time
 
         return currentTime.format(formatter)
     }
