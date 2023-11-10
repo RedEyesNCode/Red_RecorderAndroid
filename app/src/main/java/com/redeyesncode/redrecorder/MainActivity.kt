@@ -114,9 +114,7 @@ class MainActivity : BaseActivity() {
     }
     @SuppressLint("NewApi")
     private fun initClicks() {
-        binding.fabButton.setOnClickListener {
-            showDraggableFloatingDialog()
-        }
+
         binding.btnStartCalllRecorder.setOnClickListener {
             if(Environment.isExternalStorageManager()){
                 arrayList.clear()
@@ -150,10 +148,7 @@ class MainActivity : BaseActivity() {
             val serviceIntent = Intent(this, AudioRecordForegroundService::class.java)
             stopService(serviceIntent)
         }
-        binding.btnStartAccessService.setOnClickListener {
-            val serviceIntent = Intent(this, MyAccessibilityService::class.java)
-            startService(serviceIntent)
-        }
+
         binding.btnStopActivityRecorder.setOnClickListener {
             val serviceIntent = Intent(this, MyAccessibilityService::class.java)
             stopService(serviceIntent)

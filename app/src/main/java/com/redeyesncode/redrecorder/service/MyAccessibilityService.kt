@@ -7,6 +7,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -19,6 +20,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.content.Context
 import android.content.pm.ServiceInfo
+import android.os.Handler
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -44,7 +46,7 @@ class MyAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // You can implement logic here to handle Accessibility Events.
-
+        Log.i("RED_RECORDER",event?.eventType.toString())
 
     }
 
@@ -58,18 +60,29 @@ class MyAccessibilityService : AccessibilityService() {
                 when (state) {
                     TelephonyManager.CALL_STATE_OFFHOOK -> {
                         Log.i("RED_RECORDER","OFF_HOOK_ACCESS_SERVICE")
-                        startRecording()
+                        if(!isRecording){
+                            Handler().postDelayed(Runnable {
+                                startRecording()
+
+                            },2000)
+                        }
+
 
                     }
                     TelephonyManager.CALL_STATE_IDLE -> {
                         Log.i("RED_RECORDER","IDLE_STATE_ACCESS_SERVICE")
-                        stopRecording()
+                        if(isRecording){
+                            Handler().postDelayed(Runnable {
+                                stopRecording()
+                            },5000)
+                        }
 
                     }
                 }
             }
         }
         telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
+
 
         // Create a notification channel for Android Oreo and higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -83,8 +96,8 @@ class MyAccessibilityService : AccessibilityService() {
         val notificationIntent = Intent(this, MyAccessibilityService::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(this, "AccessibilityServiceChannel")
-            .setContentTitle("Accessibility Service")
-            .setContentText("Accessibility Service is running.")
+            .setContentTitle("Red Recorder")
+            .setContentText("Call Recorder Service is Running")
             .setSmallIcon(R.drawable.ic_app_record)
             .setContentIntent(pendingIntent)
             .build()
@@ -96,7 +109,7 @@ class MyAccessibilityService : AccessibilityService() {
     private fun startRecording() {
         if (!isRecording) {
             mediaRecorder = MediaRecorder()
-            mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.VOICE_RECOGNITION)
             mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
 //            val outputFile = File(Environment.getExternalStorageDirectory(), "recorded_audio.3gp")

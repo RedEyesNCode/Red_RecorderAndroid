@@ -2,4 +2,5 @@
 <resources>
     <string name="accessibility_service_label">access_service</string>
     <string name="accessibility_service_description">call_recorder_accessibility_service</string>
+    <string name="start_call_recording_service">START CALL RECORDING SERVICE</string>
 </resources>
