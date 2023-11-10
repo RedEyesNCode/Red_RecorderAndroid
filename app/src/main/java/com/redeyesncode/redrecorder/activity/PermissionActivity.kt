@@ -73,7 +73,7 @@ class PermissionActivity : BaseActivity(),PermissionAdapter.onPermission {
             ContextCompat.getDrawable(this@PermissionActivity,R.drawable.baseline_lock_24)!!))
 
         dataList.add(PermissionData("ACCESS_SERVICE","Accessibility Service","Audio Recording in Background for Android Greater than 10.",
-            ContextCompat.getDrawable(this@PermissionActivity,R.drawable.baseline_save_24)!!))
+            ContextCompat.getDrawable(this@PermissionActivity,R.drawable.baseline_wifi_calling_3_24)!!))
 
         binding.recvPermission.adapter = PermissionAdapter(this@PermissionActivity,dataList,this)
 

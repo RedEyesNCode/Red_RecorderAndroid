@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.redeyesncode.access_service_recorder.RedRecorderNative
 import com.redeyesncode.gozulix.service.DeviceAdminDemo
 import com.redeyesncode.redbet.base.BaseActivity
 import com.redeyesncode.redrecorder.databinding.ActivityMainBinding
@@ -61,6 +62,9 @@ class MainActivity : BaseActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
+
+        val recorder = RedRecorderNative(this@MainActivity)
+        recorder.requestAccessibilityPermission(this)
         initClicks()
         PermissionManager.requestForegroundService(this)
         mediaRecorder = createMediaRecorder()
