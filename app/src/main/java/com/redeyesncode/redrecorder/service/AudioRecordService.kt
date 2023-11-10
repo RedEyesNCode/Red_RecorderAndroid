@@ -1,13 +1,24 @@
 package com.redeyesncode.redrecorder.service
 
 import android.annotation.SuppressLint
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Environment
 import android.os.IBinder
 import android.os.Handler
+import android.os.Process
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import com.redeyesncode.redrecorder.R
+import com.redeyesncode.redrecorder.activity.SplashActivity
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -20,6 +31,8 @@ class AudioRecordService : Service() {
     private val recordingDuration = 6000 // 15 seconds in milliseconds
     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val filePath = downloadsDir.absolutePath + "/recording${getCurrentTime()}red.amr"
+    private val channelId = "RedRecorderNotificationChannel_2"
+    private val notificationId = 102 // Unique ID for the notification
 
 
     private var mediaRecorder: MediaRecorder? = null
@@ -40,7 +53,7 @@ class AudioRecordService : Service() {
         if (intent?.action == "START_RECORDING") {
             // Start recording
             try {
-
+                startRecording()
                 Log.i("RED_RECORDER","service-record-prepare()")
 
             } catch (e: Exception) {
@@ -52,14 +65,16 @@ class AudioRecordService : Service() {
             // Stop recording if it's in progress
             stopRecording()
             Log.i("RED_RECORDER","service-record-stop()")
+            dismissNotification()
+            stopSelf()
 
         }
 
-        return START_NOT_STICKY
+        return START_STICKY
     }
     private fun createMediaRecorder(): MediaRecorder {
         val recorder = MediaRecorder()
-        recorder.setAudioSource(MediaRecorder.AudioSource.UNPROCESSED)
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
         recorder.setOutputFile(filePath)
@@ -72,7 +87,38 @@ class AudioRecordService : Service() {
         mediaRecorder = null
         stopSelf()
     }
-    private suspend fun startRecording() {
+    private fun dismissNotification() {
+        stopForeground(true)
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.cancel(notificationId)
+    }
+    private fun buildForegroundNotification(): Notification {
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create a notification channel (required for Android 8.0+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "RED_RECORDER", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Create a pending intent for when the notification is clicked
+        val notificationIntent = Intent(this, SplashActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+
+        // Build the notification
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Call In Progress")
+            .setContentText("You are currently on a call.")
+            .setSmallIcon(R.drawable.baseline_android_24) // Replace with your icon
+            .setContentIntent(pendingIntent)
+            .build()
+
+        return notification
+
+
+    }
+    private  fun startRecording() {
         try {
             mediaRecorder?.prepare()
             mediaRecorder?.start()

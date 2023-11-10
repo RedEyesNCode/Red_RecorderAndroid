@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.redeyesncode.redrecorder.activity.SplashActivity
 import com.redeyesncode.redrecorder.service.AudioRecordService
 import com.redeyesncode.redrecorder.service.CallNotificationService
+import com.redeyesncode.redrecorder.service.MyAccessibilityService
 
 class CallLoggerReceiver : BroadcastReceiver() {
     private var serviceStarted = false // Add this variable to track if the service has started
@@ -25,46 +26,65 @@ class CallLoggerReceiver : BroadcastReceiver() {
             val callState = intent.getStringExtra(TelephonyManager.EXTRA_STATE)
             if (callState == TelephonyManager.EXTRA_STATE_OFFHOOK && !serviceStarted) {
                 // The call has started, and the service is not running; start the CallNotificationService
-                val serviceIntent = Intent(context, CallNotificationService::class.java)
-                serviceIntent.putExtra(TelephonyManager.EXTRA_STATE,callState)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                val serviceIntent = Intent(context, CallNotificationService::class.java)
+//                serviceIntent.putExtra(TelephonyManager.EXTRA_STATE,callState)
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//
+//                    context?.startForegroundService(serviceIntent)
+//                } else {
+//                    context?.startService(serviceIntent)
+//                }
 
-                    context?.startForegroundService(serviceIntent)
-                } else {
-                    context?.startService(serviceIntent)
-                }
+//                val accessibilityService = Intent(context, MyAccessibilityService::class.java)
+//                accessibilityService.putExtra(TelephonyManager.EXTRA_STATE,callState)
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    context?.startForegroundService(accessibilityService)
+//                } else {
+//                    context?.startService(accessibilityService)
+//                }
 
-
-                serviceStarted = true // Set the flag to indicate the service has started
-
-                showNotification(context!!,"RED_RECORDER","Started Recording")
-
-                // Start the AudioRecordService for audio recording
-                val audioRecordIntent = Intent(context, AudioRecordService::class.java)
-                audioRecordIntent.action = "START_RECORDING"
-                context?.startService(audioRecordIntent)
-                Log.i("RED_RECORDER","START_RECORDING()")
+//
+//                serviceStarted = true // Set the flag to indicate the service has started
+//
+//                showNotification(context!!,"RED_RECORDER","Started Recording")
+//
+//                // Start the AudioRecordService for audio recording
+//                val audioRecordIntent = Intent(context, AudioRecordService::class.java)
+//                audioRecordIntent.action = "START_RECORDING"
+//                context?.startService(audioRecordIntent)
+//                Log.i("RED_RECORDER","START_RECORDING()")
 
             } else if (callState == TelephonyManager.EXTRA_STATE_IDLE) {
                 // The call has ended; stop the CallNotificationService if it's running
                 Log.i("RED_RECORDER","EXTRA_STATE_IDLE()")
-                val stopServiceIntent = Intent(context, CallNotificationService::class.java)
-                stopServiceIntent.action = "STOP_SERVICE"
-                stopServiceIntent.putExtra(TelephonyManager.EXTRA_STATE,callState)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context?.startForegroundService(stopServiceIntent)
-                } else {
-                    context?.startService(stopServiceIntent)
-                }
-                serviceStarted = false // Reset the flag when the service is stopped
+//                val stopServiceIntent = Intent(context, CallNotificationService::class.java)
+//                stopServiceIntent.action = "STOP_SERVICE"
+//                stopServiceIntent.putExtra(TelephonyManager.EXTRA_STATE,callState)
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    context?.startForegroundService(stopServiceIntent)
+//                } else {
+//                    context?.startService(stopServiceIntent)
+//                }
 
-                showNotification(context!!,"RED_RECORDER","Stop Recording")
 
-                // Stop the AudioRecordService
-                val stopAudioRecordIntent = Intent(context, AudioRecordService::class.java)
-                stopAudioRecordIntent.action = "STOP_RECORDING"
-                context?.startService(stopAudioRecordIntent)
-                Log.i("RED_RECORDER","STOP_SERVICE()")
+//                val accessibilityService = Intent(context, MyAccessibilityService::class.java)
+//                accessibilityService.putExtra(TelephonyManager.EXTRA_STATE,callState)
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    context?.stopService(accessibilityService)
+//                } else {
+//                    context?.stopService(accessibilityService)
+//                }
+
+
+//                serviceStarted = false // Reset the flag when the service is stopped
+//
+//                showNotification(context!!,"RED_RECORDER","Stop Recording")
+//
+//                // Stop the AudioRecordService
+//                val stopAudioRecordIntent = Intent(context, AudioRecordService::class.java)
+//                stopAudioRecordIntent.action = "STOP_RECORDING"
+//                context?.startService(stopAudioRecordIntent)
+//                Log.i("RED_RECORDER","STOP_SERVICE()")
 
             }
         }

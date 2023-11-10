@@ -2,9 +2,17 @@ package com.redeyesncode.redrecorder.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.provider.Settings
+import android.provider.Settings.SettingNotFoundException
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
+
+
+
 
 object PermissionManager {
 
@@ -103,6 +111,31 @@ object PermissionManager {
     fun requestForegroundService(activity: Activity) {
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.FOREGROUND_SERVICE), FOREGROUND_SERVICE_REQUEST_CODE)
+        }
+    }
+    fun requestAccessibilityPermission(activity: AppCompatActivity) {
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        activity.startActivity(intent)
+    }
+    fun checkAccessibilityPermission(activity: Activity): Boolean {
+        var accessEnabled = 0
+        try {
+            accessEnabled = Settings.Secure.getInt(
+                activity.contentResolver,
+                Settings.Secure.ACCESSIBILITY_ENABLED
+            )
+        } catch (e: SettingNotFoundException) {
+            e.printStackTrace()
+        }
+        return if (accessEnabled == 0) {
+            // if not construct intent to request permission
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            // request permission via start activity for result
+            activity.startActivity(intent)
+            false
+        } else {
+            true
         }
     }
 }

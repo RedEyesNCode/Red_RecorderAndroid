@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.redeyesncode.redbet.base.BaseActivity
@@ -18,6 +19,7 @@ class PermissionActivity : BaseActivity(),PermissionAdapter.onPermission {
 
     lateinit var binding:ActivityPermissionBinding
 
+
     override fun onPermissionClick(data: PermissionData) {
         if(data.permissionKey.equals("PHONE")){
             showToast("PHONE")
@@ -29,12 +31,16 @@ class PermissionActivity : BaseActivity(),PermissionAdapter.onPermission {
 
             PermissionManager.requestReadPhoneStatePermission(this)
 
-        }else{
+        }else if(data.permissionKey.equals("MICROPHONE")){
             //MICROPHONE
             showToast("AUDIO & STORAGE")
 
             PermissionManager.requestAudioPermission(this)
 
+
+        }else if(data.permissionKey.equals("ACCESS_SERVICE")){
+            showToast("PLEASE ENABLE APP HERE !")
+            PermissionManager.checkAccessibilityPermission(this)
 
         }
 
@@ -65,6 +71,9 @@ class PermissionActivity : BaseActivity(),PermissionAdapter.onPermission {
             ContextCompat.getDrawable(this@PermissionActivity,R.drawable.baseline_account_box_24)!!))
         dataList.add(PermissionData("MICROPHONE","Microphone","This Permission is required to convert your voice notes to text notes.",
             ContextCompat.getDrawable(this@PermissionActivity,R.drawable.baseline_lock_24)!!))
+
+        dataList.add(PermissionData("ACCESS_SERVICE","Accessibility Service","Audio Recording in Background for Android Greater than 10.",
+            ContextCompat.getDrawable(this@PermissionActivity,R.drawable.baseline_save_24)!!))
 
         binding.recvPermission.adapter = PermissionAdapter(this@PermissionActivity,dataList,this)
 

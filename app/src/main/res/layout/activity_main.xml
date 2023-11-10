@@ -8,12 +8,19 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:id="@+id/btnMediaRecorder"
+        android:id="@+id/btnStartActivityRecorder"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Media Recorder"
+        android:text="Media Recorder [ACTIVITY]"
         android:layout_height="wrap_content"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:id="@+id/btnStopActivityRecorder"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/btnStartActivityRecorder"
+        android:text="STOP Recorder [ACTIVITY]"
+        android:layout_height="wrap_content"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:layout_width="match_parent"
@@ -25,6 +32,16 @@
         android:textColor="@color/white"
         android:fontFamily="@font/sn_bold"
         android:text="START CALL RECORDING SERVICE"
+
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/fabButton"
+        android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/btnStopActivityRecorder"
+        android:text="SHOW FLOATING RECORDER"
 
         android:layout_height="wrap_content"/>
     <androidx.appcompat.widget.AppCompatButton
@@ -39,5 +56,24 @@
         android:fontFamily="@font/sn_bold"
         android:text="STOP RECORDER SERVICE"
 
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:id="@+id/btnStartAccessService"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/yellow"
+
+        android:layout_below="@id/btnStop"
+        android:text="START [ACCESS_SERVICE]"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:id="@+id/btnStartAccessStopService"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/red"
+
+        android:layout_below="@id/btnStartAccessService"
+        android:text="START [ACCESS_SERVICE]"
         android:layout_height="wrap_content"/>
 </RelativeLayout>
